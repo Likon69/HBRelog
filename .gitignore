@@ -1,0 +1,34 @@
+# Build artifacts
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build-generated files
+*.cache
+*.ilk
+*.meta
+*.obj
+*.pdb
+*.ipch
+*.iobj
+*.pch
+*.rsp
+*.log
+
+# Visual Studio Code workspace files
+.vscode/
+
+# Rider
+.idea/
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# OS generated files
+.DS_Store
