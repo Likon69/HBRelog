@@ -1,0 +1,18 @@
+[27/04/2026 17:40:05] HBRelog Version 1.0.0.75
+[27/04/2026 17:40:07] Texy: ********* Tasks ***********
+[27/04/2026 17:40:07] Texy: ********* End of Task list ***********
+[27/04/2026 17:40:07] Texy: starting C:\Users\Texy6\Desktop\World of Warcraft 3.3.5a original\Wow.exe
+[27/04/2026 17:40:09] Texy: Installing Endscene hook
+[27/04/2026 17:40:09] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:11] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:12] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:13] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:14] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:15] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:16] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:17] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:18] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:19] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:20] Texy: GlueStatus: 9460301
+[27/04/2026 17:40:21] Texy: Attempting to close Wow
+[27/04/2026 17:40:22] Texy: Successfully closed Wow

@@ -1,0 +1,66 @@
+[27/04/2026 19:56:50] HBRelog Version 1.0.0.75
+[27/04/2026 19:56:53] Texy: ********* Tasks ***********
+[27/04/2026 19:56:53] Texy: ********* End of Task list ***********
+[27/04/2026 19:56:53] Texy: starting C:\Users\Texy6\Desktop\World of Warcraft 3.3.5a original\Wow.exe
+[27/04/2026 19:56:55] Texy: Installing Endscene hook
+[27/04/2026 19:56:55] DxDevice9 Offset found at 0x85DF88
+[27/04/2026 19:56:56] DxDevice9 Index is 0x397C
+[27/04/2026 19:56:56] GameState Offset found at 0x72F9E1
+[27/04/2026 19:56:56] FrameScriptExecute Offset found at 0x419210
+[27/04/2026 19:56:57] System.IO.InvalidDataException: Pattern not found
+   à HighVoltz.CleanPattern.Pattern.FindStart(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 65
+   à HighVoltz.CleanPattern.Pattern.Find(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 70
+   à HighVoltz.HBRelog.WoW.Hook.ScanForOffset() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 291
+   à HighVoltz.HBRelog.WoW.Hook.InstallHook() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 58
+[27/04/2026 19:56:57] Texy: GlueStatus: 9460301
+[27/04/2026 19:56:57] Texy: Installing Endscene hook
+[27/04/2026 19:56:58] DxDevice9 Offset found at 0x85DF88
+[27/04/2026 19:56:58] DxDevice9 Index is 0x397C
+[27/04/2026 19:56:58] GameState Offset found at 0x72F9E1
+[27/04/2026 19:56:58] FrameScriptExecute Offset found at 0x419210
+[27/04/2026 19:56:59] System.IO.InvalidDataException: Pattern not found
+   à HighVoltz.CleanPattern.Pattern.FindStart(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 65
+   à HighVoltz.CleanPattern.Pattern.Find(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 70
+   à HighVoltz.HBRelog.WoW.Hook.ScanForOffset() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 291
+   à HighVoltz.HBRelog.WoW.Hook.InstallHook() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 58
+[27/04/2026 19:56:59] Texy: GlueStatus: 9460301
+[27/04/2026 19:56:59] Texy: Installing Endscene hook
+[27/04/2026 19:56:59] DxDevice9 Offset found at 0x85DF88
+[27/04/2026 19:57:00] DxDevice9 Index is 0x397C
+[27/04/2026 19:57:00] GameState Offset found at 0x72F9E1
+[27/04/2026 19:57:00] FrameScriptExecute Offset found at 0x419210
+[27/04/2026 19:57:01] System.IO.InvalidDataException: Pattern not found
+   à HighVoltz.CleanPattern.Pattern.FindStart(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 65
+   à HighVoltz.CleanPattern.Pattern.Find(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 70
+   à HighVoltz.HBRelog.WoW.Hook.ScanForOffset() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 291
+   à HighVoltz.HBRelog.WoW.Hook.InstallHook() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 58
+[27/04/2026 19:57:01] Texy: GlueStatus: 9460301
+[27/04/2026 19:57:01] Texy: Installing Endscene hook
+[27/04/2026 19:57:01] DxDevice9 Offset found at 0x85DF88
+[27/04/2026 19:57:02] DxDevice9 Index is 0x397C
+[27/04/2026 19:57:02] GameState Offset found at 0x72F9E1
+[27/04/2026 19:57:02] FrameScriptExecute Offset found at 0x419210
+[27/04/2026 19:57:03] System.IO.InvalidDataException: Pattern not found
+   à HighVoltz.CleanPattern.Pattern.FindStart(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 65
+   à HighVoltz.CleanPattern.Pattern.Find(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 70
+   à HighVoltz.HBRelog.WoW.Hook.ScanForOffset() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 291
+   à HighVoltz.HBRelog.WoW.Hook.InstallHook() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 58
+[27/04/2026 19:57:03] Texy: GlueStatus: 9460301
+[27/04/2026 19:57:03] Texy: Installing Endscene hook
+[27/04/2026 19:57:03] DxDevice9 Offset found at 0x85DF88
+[27/04/2026 19:57:04] Texy: Attempting to close Wow
+[27/04/2026 19:57:04] DxDevice9 Index is 0x397C
+[27/04/2026 19:57:04] GameState Offset found at 0x72F9E1
+[27/04/2026 19:57:04] FrameScriptExecute Offset found at 0x419210
+[27/04/2026 19:57:05] System.NullReferenceException: La référence d'objet n'est pas définie à une instance d'un objet.
+   à HighVoltz.CleanPattern.Pattern.FindStart(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 59
+   à HighVoltz.CleanPattern.Pattern.Find(BlackMagic bm) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\CleanPattern\Pattern.cs:ligne 70
+   à HighVoltz.HBRelog.WoW.Hook.ScanForOffset() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 291
+   à HighVoltz.HBRelog.WoW.Hook.InstallHook() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Hook.cs:ligne 58
+[27/04/2026 19:57:05] System.NullReferenceException: La référence d'objet n'est pas définie à une instance d'un objet.
+   à HighVoltz.HBRelog.WoW.Lua.DoString(String command) dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\Lua.cs:ligne 15
+   à HighVoltz.HBRelog.WoW.WowManager.LoginWoW() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\WoWManager.cs:ligne 344
+   à HighVoltz.HBRelog.WoW.WowManager.Pulse() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\WoW\WoWManager.cs:ligne 265
+   à HighVoltz.HBRelog.TaskManager.Pulse() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\TaskManager.cs:ligne 64
+   à HighVoltz.HBRelog.HBRelogManager.DoWork() dans C:\Users\Texy6\Desktop\HBRelog-80eb84aa39429f37cb8a4802ee9571d37442a9e4\HBRelogManager.cs:ligne 94
+[27/04/2026 19:57:05] Texy: Successfully closed Wow
