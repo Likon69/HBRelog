@@ -70,7 +70,21 @@ namespace HighVoltz.HBRelog.WoW
 
         public GlueState GlueStatus
         {
-            get { return WowHook != null ? (GlueState)Memory.ReadInt(HBRelogManager.Settings.GlueStateOffset + WowHook.BaseOffset) : GlueState.Disconnected; }
+            get
+            {
+                if (WowHook == null) return GlueState.Disconnected;
+                try
+                {
+                    // WotLK 3.3.5a: GlueStateOffset points to byte_B6A9E0 (64-byte screen name string)
+                    byte[] screenBytes = Memory.ReadBytes(HBRelogManager.Settings.GlueStateOffset + WowHook.BaseOffset, 64);
+                    string screen = System.Text.Encoding.ASCII.GetString(screenBytes).TrimEnd('\0').ToLower();
+                    if (screen == "charselect") return GlueState.CharacterSelection;
+                    if (screen == "charcreate") return GlueState.CharacterCreation;
+                    if (screen == "patchdownload") return GlueState.Updater;
+                    return GlueState.Disconnected; // "login" or empty
+                }
+                catch { return GlueState.Disconnected; }
+            }
         }
         public bool IsRunning { get; private set; }
         public bool StartupSequenceIsComplete { get; private set; }
@@ -467,15 +481,16 @@ namespace HighVoltz.HBRelog.WoW
 
         void AntiAfk()
         {
-            if (WowHook != null)
+            // WotLK 3.3.5a: LastHardwareEventOffset is 0 (pattern not found); guard against writing to base address
+            if (WowHook != null && HBRelogManager.Settings.LastHardwareEventOffset != 0)
                 WowHook.Memory.WriteInt(HBRelogManager.Settings.LastHardwareEventOffset + WowHook.BaseOffset, System.Environment.TickCount);
         }
-        // credits mnbvc for original version. modified to work with Cata
-        // http://www.ownedcore.com/forums/world-of-warcraft/world-of-warcraft-bots-programs/wow-memory-editing/302552-lua-auto-login-final-solution.html
-        // indexes are {0}=BnetEmail, {1}=password, {2}=accountName
+        // WotLK 3.3.5a login: no BattleNet, direct username/password via DefaultServerLogin
+        // indexes are {0}=username, {1}=password, {2}=accountName, {3}=server
 
         const string LoginLuaFormat =
             "local acct = \"{2}\" " +
+            "local server = \"{3}\" " +
             "if (WoWAccountSelectDialog and WoWAccountSelectDialog:IsShown()) then " +
                 "for i = 1, GetNumGameAccounts() do " +
                     "if GetGameAccountInfo(i):upper() == acct:upper() then " +
@@ -483,18 +498,20 @@ namespace HighVoltz.HBRelog.WoW
                     "end " +
                 "end " +
             "elseif (AccountLoginUI and AccountLoginUI:IsVisible()) then " +
-                "if (AccountLoginDropDown:IsShown()) then " +
-                   " for i=1, #AccountList  do " +
-                        "if AccountList[i].text:upper() == acct:upper() then " +
-                            "GlueDropDownMenu_SetSelectedName(AccountLoginDropDown,AccountList[i].text) " +
-                            "GlueDialog_Show('ACCOUNT_MSG',AccountList[i].text) " +
-                        "end " +
-                    "end  " +
-                "end " +
-                "DefaultServerLogin(\"{0}\",\"{1}\") " +
+                "DefaultServerLogin(\"{0}\", \"{1}\") " +
                 "AccountLoginUI:Hide() " +
+            "elseif (RealmList and RealmList:IsVisible()) then " +
+                "for i = 1, select('#', GetRealmCategories()) do " +
+                    "for j = 1, GetNumRealms(i) do " +
+                        "if GetRealmInfo(i, j):upper() == server:upper() then " +
+                            "RealmList:Hide() " +
+                            "ChangeRealm(i, j) " +
+                        "end " +
+                    "end " +
+                "end " +
             "end ";
 
+        // WotLK 3.3.5a: SelectCharacter(i) + EnterWorld() — no CharSelectEnterWorldButton
         // indexes are {0}=character, {1}=server
         const string CharSelectLuaFormat =
             "local name = \"{0}\" " +
@@ -503,24 +520,12 @@ namespace HighVoltz.HBRelog.WoW
                 "if GetServerName():upper() ~= server:upper() and (not RealmList or not RealmList:IsVisible()) then " +
                     "RequestRealmList(1) " +
                 "else " +
-                    "if (GetCharacterInfo(CharacterSelect.selectedIndex):upper() == name:upper()) then " +
-                        "CharSelectEnterWorldButton:Click() " +
-                    "else " +
-                        "for i = 1,GetNumCharacters() do " +
-                            "if (GetCharacterInfo(i):upper() == name:upper()) then " +
-                                "CharacterSelect_SelectCharacter(i) " +
-                                "return " +
-                            "end " +
+                    "for i = 1, GetNumCharacters() do " +
+                        "if GetCharacterInfo(i):upper() == name:upper() then " +
+                            "CharacterSelect_SelectCharacter(i) " +
+                            "EnterWorld() " +
                         "end " +
                     "end " +
-            //        "for i = 1,GetNumCharacters() do " +
-            ////"local name = GetCharacterInfo(i) " +
-            ////"GlueDialog_Show('ACCOUNT_MSG',name:upper()..':'..CharacterSelect.selectedIndex) " + 
-            //            "if (GetCharacterInfo(i):upper() == name:upper()) then " +
-            //               // "CharacterSelect_SelectCharacter(i) " +
-            //               // "CharSelectEnterWorldButton:Click() " +
-            //            "end " +
-            //        "end " +
                 "end " +
             "elseif (CharCreateRandomizeButton and CharCreateRandomizeButton:IsVisible()) then " +
                 "CharacterCreate_Back() " +
@@ -551,8 +556,8 @@ namespace HighVoltz.HBRelog.WoW
             string password = Settings.Password.EncodeToUTF8();
             string server = Settings.ServerName;
             string character = Settings.CharacterName;
-            // indexes are 0=BnetEmail, 1=password, 2=accountName, 3=character, 4=server
-            _loginLua = string.Format(LoginLuaFormat, bnetLogin, password, accountName);
+            // indexes are 0=username, 1=password, 2=accountName, 3=server
+            _loginLua = string.Format(LoginLuaFormat, bnetLogin, password, accountName, server);
             // indexes are {0}=character, {1}=server
             _charSelectLua = string.Format(CharSelectLuaFormat, character, server);
             // indexes are {0}=server

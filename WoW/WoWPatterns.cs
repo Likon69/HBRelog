@@ -8,17 +8,22 @@ namespace HighVoltz.HBRelog.WoW
 {
     static public class WoWPatterns
     {
-        static public readonly Pattern GameStatePattern = Pattern.FromTextstyle("GameState", "? ? ? ? 0F 84 ? ? ? ? 8B 86 FC 00 00 00 8B 38 8B 40 04 89 45 FC E8 ? ? ? ? 3B F8 0F 85",
-            new LeaModifier());
+        // WotLK 3.3.5a: sub_428010 — bool check of byte_B38180 && byte_B38181
+        static public readonly Pattern GameStatePattern = Pattern.FromTextstyle("GameState", "80 3D ? ? ? ? 00 74 0F 80 3D ? ? ? ? 00 74 06 B8 01 00 00 00 C3 33 C0 C3",
+            new AddModifier(2), new LeaModifier());
         static public readonly Pattern Dx9DevicePattern = Pattern.FromTextstyle("Dx9Device", "55 8B EC 8B 55 0C 8B 0D ? ? ? ? 8B 01 8B 80 ? ? ? ? 52 8B 55 08 52 FF D0 5D C3",
             new AddModifier(8), new LeaModifier());
-        static public readonly Pattern Dx9DeviceInxPattern = Pattern.FromTextstyle("Dx9DeviceInx", "? ? ? ? 8B 08 8B 51 14 50 FF D2 85 C0 7D 2B 3D 27 08 76 88 75 24 68 11 11 11 11 6A 00 6A 01 6A 00 68");
+        // WotLK 3.3.5a: sub_68F3D0 — IDirect3DDevice9* stored at CGxDeviceD3d+0x397C (this+3679*4)
+        // Pattern: mov ecx,[eax] / neg bl / lea edi,[esi+397Ch] / push edi — AddModifier(6) lands on the 7C 39 00 00 bytes
+        static public readonly Pattern Dx9DeviceInxPattern = Pattern.FromTextstyle("Dx9DeviceInx", "8B 08 F6 DB 8D BE 7C 39 00 00 57",
+            new AddModifier(6));
         static public readonly Pattern FrameScriptExecutePattern = Pattern.FromTextstyle("FrameScriptExecute", "55 8B EC 51 83 05 ? ? ? ? 01 A1 ? ? ? ? 89 45 FC 74 12 83 3D ? ? ? ? 00");
         static public readonly Pattern LastHardwareEventPattern = Pattern.FromTextstyle("LastHardwareEvent", "53 8B 1D ? ? ? ? 57 8D BE F8 00 00 00 7E 3F 8B 86 00 01 00 00 8B 80 B0 00 00 00 85 C0 74 06 F6 40 20 80 74 29 8B CE",
             new AddModifier(3), new LeaModifier());
         static public readonly Pattern PerformanceCounterPattern = Pattern.FromTextstyle("PerformanceCounter", "2B 15 ? ? ? ? 83 3D ? ? ? ? 00 A3 ? ? ? ? 74 13 8B 0D ? ? ? ?",
             new AddModifier(2), new LeaModifier());
-        static public readonly Pattern GlueStatePattern = Pattern.FromTextstyle("GlueState", "83 3D ? ? ? ? 00 75 11 E8 ? ? ? ? 8B 10 8B C8 8B 82 88 00 00 00 FF E0 C3",
-            new AddModifier(2), new LeaModifier());
+        // WotLK 3.3.5a: sub_4D82C0 — push offset byte_B6A9E0 (screen name string: "login"/"charselect"/"charcreate")
+        static public readonly Pattern GlueStatePattern = Pattern.FromTextstyle("GlueState", "55 8B EC 68 FF FF FF 7F 68 ? ? ? ? 68 ? ? ? ? E8 ? ? ? ? 85 C0 75 07",
+            new AddModifier(14), new LeaModifier());
     }
 }

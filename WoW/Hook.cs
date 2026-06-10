@@ -59,6 +59,11 @@ namespace HighVoltz.HBRelog.WoW
                 }
                 // Get address of EndScene
                 uint pDevice = Memory.ReadUInt(HBRelogManager.Settings.DxDeviceOffset + BaseOffset);
+                if (pDevice == 0)
+                {
+                    // CGxDeviceD3d not initialized yet (WoW still loading), retry next pulse
+                    return false;
+                }
                 uint pEnd = Memory.ReadUInt(pDevice + HBRelogManager.Settings.DxDeviceIndex);
                 if (pEnd == 0)
                 {
@@ -289,8 +294,17 @@ namespace HighVoltz.HBRelog.WoW
                 Log.Debug("GameState Offset found at 0x{0:X}", HBRelogManager.Settings.GameStateOffset);
                 HBRelogManager.Settings.FrameScriptExecuteOffset = WoWPatterns.FrameScriptExecutePattern.Find(Memory);
                 Log.Debug("FrameScriptExecute Offset found at 0x{0:X}", HBRelogManager.Settings.FrameScriptExecuteOffset);
-                HBRelogManager.Settings.LastHardwareEventOffset = WoWPatterns.LastHardwareEventPattern.Find(Memory);
-                Log.Debug("LastHardwareEvent Offset found at 0x{0:X}", HBRelogManager.Settings.LastHardwareEventOffset);
+                try
+                {
+                    HBRelogManager.Settings.LastHardwareEventOffset = WoWPatterns.LastHardwareEventPattern.Find(Memory);
+                    Log.Debug("LastHardwareEvent Offset found at 0x{0:X}", HBRelogManager.Settings.LastHardwareEventOffset);
+                }
+                catch
+                {
+                    // WotLK 3.3.5a: no LastHardwareEvent variable; anti-AFK skipped
+                    HBRelogManager.Settings.LastHardwareEventOffset = 0;
+                    Log.Debug("LastHardwareEvent Offset not found (WotLK)");
+                }
                 HBRelogManager.Settings.GlueStateOffset = WoWPatterns.GlueStatePattern.Find(Memory);
                 Log.Debug("GlueStateOffset Offset found at 0x{0:X}", HBRelogManager.Settings.GlueStateOffset);
                 HBRelogManager.Settings.WowVersion = WoWVersion;
