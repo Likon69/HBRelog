@@ -8,8 +8,11 @@ namespace HighVoltz.HBRelog.WoW
 {
     static public class WoWPatterns
     {
-        // WotLK 3.3.5a: sub_428010 — bool check of byte_B38180 && byte_B38181
-        static public readonly Pattern GameStatePattern = Pattern.FromTextstyle("GameState", "80 3D ? ? ? ? 00 74 0F 80 3D ? ? ? ? 00 74 06 B8 01 00 00 00 C3 33 C0 C3",
+        // WotLK 3.3.5a: sub_8C6330 returns g_ClientConnectionState || (eventId == 10)
+        // g_ClientConnectionState (0xBD0792) is set to 1 in CGGameUI__EnterWorld and 0 in CGGameUI__LeaveWorld.
+        // Pattern is unique in the binary; AddModifier(2) + LeaModifier resolves to absolute address 0xBD0792,
+        // Find() subtracts the image base to return RVA 0x7D0792.
+        static public readonly Pattern GameStatePattern = Pattern.FromTextstyle("GameState", "80 3D 92 07 BD 00 00 75 0C 83 3D 38 AA B6 00 0A 74 03 33 C0 C3",
             new AddModifier(2), new LeaModifier());
         static public readonly Pattern Dx9DevicePattern = Pattern.FromTextstyle("Dx9Device", "55 8B EC 8B 55 0C 8B 0D ? ? ? ? 8B 01 8B 80 ? ? ? ? 52 8B 55 08 52 FF D0 5D C3",
             new AddModifier(8), new LeaModifier());

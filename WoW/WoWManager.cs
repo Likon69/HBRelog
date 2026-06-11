@@ -288,6 +288,12 @@ namespace HighVoltz.HBRelog.WoW
                         if (OnStartupSequenceIsComplete != null)
                             OnStartupSequenceIsComplete(this, new ProfileEventArgs(Profile));
                     }
+                    // if character returned to character selection after login, reset and re-login
+                    if (StartupSequenceIsComplete && !InGame && GlueStatus == GlueState.CharacterSelection)
+                    {
+                        Profile.Log("Character returned to character selection. Re-running login sequence.");
+                        StartupSequenceIsComplete = false;
+                    }
                     // if WoW has disconnected or crashed close wow and start the login sequence again.
 
                     if ((StartupSequenceIsComplete && (GlueStatus == GlueState.Disconnected || WowIsLoggedOutForTooLong))
