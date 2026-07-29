@@ -251,7 +251,7 @@ namespace HighVoltz.HBRelog.WoW
                     {
                         WowHook = new Hook(GameProcess);
                     }
-                    if (!StartupSequenceIsComplete && !InGame && !IsConnectiongOrLoading)
+                    if (!StartupSequenceIsComplete && !InGame)
                     {
                         if (!WowHook.Installed)
                         {
@@ -279,7 +279,11 @@ namespace HighVoltz.HBRelog.WoW
                         LoginWoW();
                     }
                     // remove hook since its nolonger needed.
-                    if (WowHook.Installed && (InGame || IsConnectiongOrLoading) && WowHook != null)
+                    // Trust only InGame (g_ClientConnectionState) — the +1 byte IsConnectiongOrLoading
+                    // reads is not a loading flag on WotLK 3.3.5a, so firing dispose on it yanked the hook
+                    // mid-transition (EnterWorld->LoadingScreen->InWorld) and the following Pulse
+                    // immediately reset StartupSequenceIsComplete via the stale GlueStatus buffer.
+                    if (WowHook.Installed && InGame && WowHook != null)
                     {
                         Profile.Log("Login sequence complete. Removing hook");
                         Profile.Status = "Logged into WoW";
@@ -288,12 +292,23 @@ namespace HighVoltz.HBRelog.WoW
                         if (OnStartupSequenceIsComplete != null)
                             OnStartupSequenceIsComplete(this, new ProfileEventArgs(Profile));
                     }
-                    // if character returned to character selection after login, reset and re-login
+                    // if character returned to character selection after login, reset and re-login.
+                    // Debounce 1.5s — g_ClientConnectionState can briefly flip 1->0 during a
+                    // legitimate CGGameUI__LeaveWorld that's actually a failed transition (e.g.
+                    // double-EnterWorld), and we don't want to relog-spam on that flicker.
                     if (StartupSequenceIsComplete && !InGame && GlueStatus == GlueState.CharacterSelection)
                     {
-                        Profile.Log("Character returned to character selection. Re-running login sequence.");
-                        StartupSequenceIsComplete = false;
+                        if (!_charselectReturnSW.IsRunning)
+                            _charselectReturnSW.Start();
+                        if (_charselectReturnSW.ElapsedMilliseconds >= 1500)
+                        {
+                            Profile.Log("Character returned to character selection. Re-running login sequence.");
+                            StartupSequenceIsComplete = false;
+                            _charselectReturnSW.Reset();
+                        }
                     }
+                    else if (_charselectReturnSW.IsRunning)
+                        _charselectReturnSW.Reset();
                     // if WoW has disconnected or crashed close wow and start the login sequence again.
 
                     if ((StartupSequenceIsComplete && (GlueStatus == GlueState.Disconnected || WowIsLoggedOutForTooLong))
@@ -328,6 +343,8 @@ namespace HighVoltz.HBRelog.WoW
         Stopwatch _serverSelectionSW = new Stopwatch();
         DateTime _luaThrottleTimeStamp = DateTime.Now;
         GlueState _lastGlueStatus = GlueState.None;
+        DateTime _enterWorldAttemptTimeStamp = DateTime.MinValue;
+        Stopwatch _charselectReturnSW = new Stopwatch();
         private void LoginWoW()
         {
             // throttle lua calls.
@@ -369,8 +386,17 @@ namespace HighVoltz.HBRelog.WoW
                             Lua.DoString(_loginLua);
                             break;
                         case GlueState.CharacterSelection:
-                            Profile.Status = "At Character Selection";
-                            Lua.DoString(_charSelectLua);
+                            // Cooldown 5s on EnterWorld attempts — sending EnterWorld() again
+                            // while a previous transition is still loading cancels the transition
+                            // client-side and bounces back to charselect (CGGameUI__LeaveWorld
+                            // runs, g_ClientConnectionState 1->0). Throttle so only one
+                            // SelectCharacter+EnterWorld fires per attempt window.
+                            if (DateTime.Now - _enterWorldAttemptTimeStamp >= TimeSpan.FromSeconds(5))
+                            {
+                                Profile.Status = "At Character Selection";
+                                Lua.DoString(_charSelectLua);
+                                _enterWorldAttemptTimeStamp = DateTime.Now;
+                            }
                             break;
                         case GlueState.ServerSelection:
                             Profile.Status = "At Server Selection";
