@@ -110,7 +110,7 @@
                                                        DefaultExt=".xml" Filter=".xml|*.xml"
                                                        ToolTip="The path to a Honorbuddy/Professionbuddy profile that you want to use. (optional)"/>
                             <!--HB Path-->
-                            <TextBlock Text="Honorbuddy Path" HorizontalAlignment="Left" Height="20" Margin="5,0,5,0" Grid.Row="3" />
+                            <TextBlock Text="CopilotBuddy Path" HorizontalAlignment="Left" Height="20" Margin="5,0,5,0" Grid.Row="3" />
                             <Controls:FileInputBox x:Name="HBPathInput" Grid.Row="3" Grid.Column="1" 
                                                        FileNameChanged="HBPathInputFileNameChanged"
                                                        Title="Browse to and select your WoW.exe file"
