@@ -1,18 +1,7 @@
 ﻿//!CompilerOption:Optimize:On
-//!CompilerOption:AddRef:Remoting.dll
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
-using System.Runtime.Remoting.Lifetime;
-using System.Runtime.Serialization.Formatters;
 using System.ServiceModel;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using HighVoltz.HBRelog.Remoting;
@@ -94,16 +83,24 @@ namespace HighVoltz.HBRelogHelper
                     }));
                 IsConnected = HBRelogRemoteApi.Init(HbProcId);
                 if (IsConnected)
+                {
                     CurrentProfileName = HBRelogRemoteApi.GetCurrentProfileName(HbProcId);
+                    // Reset the running timestamp now that the WCF pipe is up, so the
+                    // restart-if-not-running timer in MonitorTimerCB measures from
+                    // "bot just connected" rather than from "class first loaded" (which
+                    // would be off by however long the plugin compilation took).
+                    RunningTimeStamp = DateTime.Now;
+                }
             }
             catch (Exception ex)
             {
                 // fail silently.
                 //Logging.Write(Color.Red, ex.ToString());
             }
-            // since theres no point of this plugin showing up in plugin list lets just throw an exception.
-
-            throw new Exception("Ignore this exception");
+            // Original Honorbuddy 3.x code threw here to skip the plugin list, but in
+            // CopilotBuddy (.NET 10) the throw just pollutes the log with a misleading
+            // "Could not construct instance" warning. The WCF connection is already
+            // established by the time we reach this point, so we just return normally.
         }
 
         void Shutdown()

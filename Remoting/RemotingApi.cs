@@ -170,5 +170,16 @@ namespace HighVoltz.HBRelog.Remoting
             if (profile != null)
                 profile.BotInfoTooltip = tooltip;
         }
+
+        public void SkipCurrentTask(string profileName)
+        {
+            CharacterProfile profile = GetProfileByName(profileName);
+            if (profile == null || !profile.IsRunning)
+                return;
+            // Mark the active task as done so the TaskManager moves on at next Pulse.
+            var currentTask = profile.Tasks.FirstOrDefault(t => t.IsRunning && !t.IsDone);
+            if (currentTask != null)
+                currentTask.Stop();
+        }
     }
 }

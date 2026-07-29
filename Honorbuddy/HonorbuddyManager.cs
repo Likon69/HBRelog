@@ -148,12 +148,20 @@ namespace HighVoltz.HBRelog.Honorbuddy
                             Profile.Log("starting {0}", Profile.Settings.HonorbuddySettings.HonorbuddyPath);
                             Profile.Status = "Starting Honorbuddy";
                             StartupSequenceIsComplete = false;
+                            // Build the bot's command-line arguments.
+                            // The original Honorbuddy bot parsed /loadprofile, /botname, and
+                            // /autostart. CopilotBuddy (the WPF/.NET 10 port) only parses
+                            // /pid (in MainWindow.xaml.cs) and /customclass (in RoutineManager.cs).
+                            // Passing /loadprofile and /botname to CopilotBuddy is a no-op — the
+                            // botbase and profile are persisted via the bot's own UI
+                            // (cmbBotSelector.SelectedIndex → CharacterSettings.Instance.SelectedBotIndex,
+                            // profile via Honorbuddy profile loader). So we only forward the args
+                            // that CopilotBuddy actually understands.
                             string hbArgs = string.Format("/pid={0} /autostart {1}{2}{3}",
                                 Profile.TaskManager.WowManager.GameProcess.Id,
                                 !string.IsNullOrEmpty(Settings.CustomClass) ? string.Format("/customclass=\"{0}\" ", Settings.CustomClass) : string.Empty,
-                                !string.IsNullOrEmpty(Settings.HonorbuddyPath) ? string.Format("/loadprofile=\"{0}\" ", Settings.HonorbuddyProfile) : string.Empty,
-                                !string.IsNullOrEmpty(Settings.BotBase) ? string.Format("/botname=\"{0}\" ", Settings.BotBase) : string.Empty
-                                );
+                                !string.IsNullOrEmpty(Settings.HonorbuddyProfile) ? string.Format("/loadprofile=\"{0}\" ", Settings.HonorbuddyProfile) : string.Empty,
+                                !string.IsNullOrEmpty(Settings.BotBase) ? string.Format("/botname=\"{0}\" ", Settings.BotBase) : string.Empty);
                             var hbWorkingDirectory = Path.GetDirectoryName(Settings.HonorbuddyPath);
                             var procStartI = new ProcessStartInfo(Settings.HonorbuddyPath, hbArgs)
                             {
@@ -215,16 +223,38 @@ namespace HighVoltz.HBRelog.Honorbuddy
                 IsRunning = false;
                 StartupSequenceIsComplete = false;
             }
+            // Cancel any pending startup-complete timer so a delayed "ready" signal
+            // from a previous bot doesn't fire after we've moved on.
+            if (_startupCompleteTimer != null)
+            {
+                _startupCompleteTimer.Dispose();
+                _startupCompleteTimer = null;
+            }
             if (lockAquried) // release lock if it was aquired
                 Monitor.Exit(_lockObject);
         }
 
         public void SetStartupSequenceToComplete()
         {
-            StartupSequenceIsComplete = true;
-            if (OnStartupSequenceIsComplete != null)
-                OnStartupSequenceIsComplete(this, new ProfileEventArgs(Profile));
+            // The bot's WCF Init is called from HBRelogHelper.cs as soon as that
+            // first plugin is compiled and its constructor runs. For WPF-based bots
+            // (e.g. CopilotBuddy) this is too early — other plugins are still being
+            // Roslyn-compiled by the DynamicLoader, and the bot has not yet logged
+            // into the world. Fire the "startup complete" event after a grace period
+            // so HBRelog does not log "WoW and HB startup sequence complete" while
+            // the bot is still in the middle of compiling plugins and getting in-game.
+            // Use a one-shot timer; subsequent calls (e.g. from a restart) are no-ops.
+            if (_startupCompleteTimer != null)
+                return;
+            _startupCompleteTimer = new System.Threading.Timer(_ =>
+            {
+                StartupSequenceIsComplete = true;
+                if (OnStartupSequenceIsComplete != null)
+                    OnStartupSequenceIsComplete(this, new ProfileEventArgs(Profile));
+            }, null, TimeSpan.FromSeconds(30), System.Threading.Timeout.InfiniteTimeSpan);
         }
+
+        System.Threading.Timer _startupCompleteTimer;
 
         Stopwatch _hbRespondingSW = new Stopwatch();
         /// <summary>
@@ -256,11 +286,21 @@ namespace HighVoltz.HBRelog.Honorbuddy
                 if (DateTime.Now - _crashTimeStamp >= TimeSpan.FromSeconds(10))
                 {
                     _crashTimeStamp = DateTime.Now;
-                    List<IntPtr> childWinHandles = NativeMethods.EnumerateProcessWindowHandles(BotProcess.Id);
-                    string hbName = Path.GetFileNameWithoutExtension(Profile.Settings.HonorbuddySettings.HonorbuddyPath);
-                    return childWinHandles.Select(h => NativeMethods.GetWindowText(h)).
-                        Count(n => !string.IsNullOrEmpty(n) && n == "Honorbuddy" ||
-                            (hbName != "Honorbuddy" && n.Contains(hbName))) > 1;
+                    // For WPF-based bots (e.g. CopilotBuddy), the original "count windows
+                    // matching the bot name" heuristic is unreliable because WPF creates
+                    // multiple top-level windows (main + dispatcher + helper windows from
+                    // MahApps.Metro / HwndSource hooks), which causes false-positive crash
+                    // detection a few seconds after startup.
+                    // Crash signal is now derived from `MainWindowHandle` being null/invalid
+                    // AND a startup grace period (so we don't fire while the WPF window is
+                    // still being constructed).
+                    if (BotProcess == null || BotProcess.HasExited)
+                        return true;
+                    // Give the bot 30 seconds after launch to show its main window.
+                    var uptime = DateTime.Now - _hbStartupTimeStamp;
+                    if (uptime < TimeSpan.FromSeconds(30))
+                        return false;
+                    return BotProcess.MainWindowHandle == IntPtr.Zero;
                 }
                 return false;
             }
