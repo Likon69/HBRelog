@@ -162,7 +162,7 @@ namespace HighVoltz.HBRelog.Settings
             if (File.Exists(settings.SettingsPath))
             {
                 XElement root = XElement.Load(settings.SettingsPath);
-                settings.WowVersion = root.Element("WowVersion").Value;
+                settings.WowVersion = GetElementValue<string>(root.Element("WowVersion"));
                 settings.AutoStart = GetElementValue<bool>(root.Element("AutoStart"));
                 settings.WowDelay = GetElementValue<int>(root.Element("WowDelay"));
                 settings.HBDelay = GetElementValue<int>(root.Element("HBDelay"), 10);
@@ -170,12 +170,12 @@ namespace HighVoltz.HBRelog.Settings
                 settings.UseDarkStyle = GetElementValue<bool>(root.Element("UseDarkStyle"), true);
                 settings.CheckRealmStatus = GetElementValue<bool>(root.Element("CheckRealmStatus"), false);
 
-                settings.DxDeviceOffset = uint.Parse(root.Element("DxDeviceOffset").Value);
-                settings.DxDeviceIndex = uint.Parse(root.Element("DxDeviceIndex").Value);
-                settings.GameStateOffset = uint.Parse(root.Element("GameStateOffset").Value);
-                settings.FrameScriptExecuteOffset = uint.Parse(root.Element("FrameScriptExecuteOffset").Value);
-                settings.LastHardwareEventOffset = uint.Parse(root.Element("LastHardwareEventOffset").Value);
-                settings.GlueStateOffset = uint.Parse(root.Element("GlueStateOffset").Value);
+                settings.DxDeviceOffset = GetElementValue<uint>(root.Element("DxDeviceOffset"));
+                settings.DxDeviceIndex = GetElementValue<uint>(root.Element("DxDeviceIndex"));
+                settings.GameStateOffset = GetElementValue<uint>(root.Element("GameStateOffset"));
+                settings.FrameScriptExecuteOffset = GetElementValue<uint>(root.Element("FrameScriptExecuteOffset"));
+                settings.LastHardwareEventOffset = GetElementValue<uint>(root.Element("LastHardwareEventOffset"));
+                settings.GlueStateOffset = GetElementValue<uint>(root.Element("GlueStateOffset"));
                 XElement characterProfilesElement = root.Element("CharacterProfiles");
                 foreach (XElement profileElement in characterProfilesElement.Elements("CharacterProfile"))
                 {
